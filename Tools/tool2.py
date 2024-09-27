@@ -5,9 +5,11 @@ from Tools.Schema import QueryInput
 
 
 
-def color(query: str, organization_name: str):
+def mercedes(query: str):
     template = """
-    You are a tool that answer queries related to specs of mercedes vehicle. You are given a human query: {query}
+    You are a tool that answer queries related to specs of mercedes vehicle. 
+    If the query is other than mercedes, say i do not knoe
+    You are given a human query: {query}
          provide response in 3 sentences in under 30 words and  concise, precise.
                     """
     prompt_temp = ChatPromptTemplate.from_template(template=template
@@ -26,8 +28,8 @@ def color(query: str, organization_name: str):
 
 vehicleTool = StructuredTool.from_function(
         name='vehicleTool',
-        func=color,
-        description="A tool that responds to query related to only Mercedes vehicle.",
+        func=mercedes,
+        description="A tool that responds to query related to only Mercedes.",
         args_schema=QueryInput,
         return_direct=True
     )

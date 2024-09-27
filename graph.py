@@ -1,12 +1,12 @@
 from Libs.libs import *
 from langgraph.graph.message import add_messages
-from Agent.agent_supervisor import members
+from Agent.agent_supervisor import members, options
 
 
 
-
-mercedes_agent= create_custom_agent(prompt="You answer about mercedes car in 50 words.", tools=[vehicleTool])
-lambo_agent = create_custom_agent(prompt="You answer about Lamborghini car in 50 words.", tools=[vehicle_lambo_Tool])
+from typing import List
+mercedes_agent= create_custom_agent(prompt="You are provided tools. Answer using the tools", tools=[vehicleTool])
+lambo_agent = create_custom_agent(prompt="You are provided tools. Answer using the tools", tools=[vehicle_lambo_Tool])
 
 
 # Agent - 1: Mercedes that has one tool
@@ -15,7 +15,8 @@ mercedes_node = functools.partial(agent_node, agent=mercedes_agent, name="Merced
 lambo_node = functools.partial(agent_node, agent=lambo_agent, name="Lamborghini")
 
 class State(TypedDict):
-    messages:Annotated[list, add_messages]# message add garne to keep track of the state
+    messages: Annotated[List[BaseMessage], operator.add]
+# message add garne to keep track of the state
     next:str
     
 
@@ -25,7 +26,6 @@ class State(TypedDict):
 workflow = StateGraph(State)
 workflow.add_node("Mercedes", mercedes_node)
 workflow.add_node("Lamborghini", lambo_node)
-
 workflow.add_node("supervisor", supervisor_agent)
 
 
@@ -40,10 +40,10 @@ workflow.add_edge(START, "supervisor")
 
 graph = workflow.compile()
 
-def enter_chain(message:str):
-    results = {
-        "messages":[HumanMessage(content=message)],
-    }
-    return results
+# def enter_chain(message:str):
+#     results = {
+#         "messages":[HumanMessage(content=message)],
+#     }
+#     return results
 
-research_chain = enter_chain| graph
+# research_chain = enter_chain| graph

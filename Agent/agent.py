@@ -7,6 +7,7 @@ from langchain.callbacks import get_openai_callback
 REDIS_SERVER = os.getenv('REDIS_SERVER') or 'localhost'
 
 def create_custom_agent(prompt, tools:list):
+    print("entered here in the agent")
 # def generate_response(query):
     prompt_agent = ChatPromptTemplate.from_messages(
         [
@@ -35,4 +36,4 @@ def create_custom_agent(prompt, tools:list):
 def agent_node(state, agent, name):
     result = agent.invoke(state)
     print(result)
-    return {"message":[HumanMessage(content=result['output'],name = name)]}
+    return {"message":[HumanMessage(content=result['output'],next = name)]}
