@@ -29,27 +29,21 @@ workflow.add_node("Lamborghini", lambo_node)
 workflow.add_node("supervisor", supervisor_agent)
 
 
-workflow.add_edge(START, "supervisor")
 
 for member in members:
     workflow.add_edge(member, "supervisor")
     
 conditional_map = {k:k for k in members} ##  {'Mercedes': 'Mercedes', 'Lamborghini': 'Lamborghini'}
-workflow.add_conditional_edges("supervisor", lambda x :x['next'], conditional_map)
-
 conditional_map['FINISH'] = END
+workflow.add_conditional_edges("supervisor", lambda x :x['next'], conditional_map)
+workflow.add_edge(START, "supervisor")
 
 graph = workflow.compile()
 
+def enter_chain(message:str):
+    results = {
+        "messages":[HumanMessage(content=message)],
+    }
+    return results
 
-# user_input = "Tell me about mercedes g wagon and lamborghini urus"
-user_input = input()
-for s in graph.stream({"messages": [
-            HumanMessage(
-                content=user_input
-            )
-        ],
-    },):
-    if "__end__" not in s:
-        print(s)
-        print("-----")
+research_chain = enter_chain| graph
