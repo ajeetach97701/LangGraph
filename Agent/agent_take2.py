@@ -18,10 +18,10 @@ from Libs.libs import *
 class MessagesState(TypedDict):
     messages: Annotated[List[AnyMessage], operator.add]
 
-tool = [check_availability_by_doctor, check_availability_by_specialization, mercedes_tool]
+tools = [check_availability_by_doctor, check_availability_by_specialization]
 # tool = [mercedes_tool]
-tool_node = ToolNode(tools=tool)
-model = llm.bind_tools(tools = tool, strict=True)
+tool_node = ToolNode(tools=tools)
+model = llm.bind_tools(tools = tools, strict=True)
 
 def read_human_feedback(state):
     # if state['messages'][-1].tool_calls == []:
@@ -32,8 +32,8 @@ def read_human_feedback(state):
     #     pass
 
 def call_model(state: MessagesState):
-    # messages = [SystemMessage(content=f"You are helpful assistant.\nAs reference, today is {datetime.now().strftime('%Y-%m-%d %H:%M, %A')}.\nKeep a friendly, professional tone.\nAvoid verbosity.\nConsiderations:\n- Don´t assume parameters in call functions that it didnt say.\n- MUST NOT force users how to write. Let them write in the way they want.\n- The conversation should be very natural like a secretary talking with a client.\n- Call only ONE tool at a time.")] + state['messages']
-    messages = [SystemMessage(content="You are a helpful assistant. As reference, today is {datetime.now().strftime('%Y-%m-%d %H:%M, %A')}. Always use tools to answer the queries")]
+    messages = [SystemMessage(content=f"You are helpful assistant.\nAs reference, today is {datetime.now().strftime('%Y-%m-%d %H:%M, %A')}.\nKeep a friendly, professional tone.\nAvoid verbosity.\nConsiderations:\n- Don´t assume parameters in call functions that it didnt say.\n- MUST NOT force users how to write. Let them write in the way they want.\n- The conversation should be very natural like a secretary talking with a client.\n- Call only ONE tool at a time.")] + state['messages']
+    # messages = [SystemMessage(content="You are a helpful assistant. As reference, today is {datetime.now().strftime('%Y-%m-%d %H:%M, %A')}. Always use tools to answer the queries")]
     response = model.invoke(messages)
     return {"messages": [response]}
 

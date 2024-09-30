@@ -10,16 +10,17 @@ def check_availability_by_doctor():
     """
     Check the availability of the doctor with the name and date provided
     """
-    doctor_name = "kevun anderson"
+    doctor_name = "kevin anderson" 
     desired_date = "2024-09-03"
     print("Tool entered")
     df = pd.read_csv(f"./data/syntetic_data/availability.csv")
-    availability = df[(df['date_slot'].apply(lambda x: x.split(' ')[0]) == desired_date.date) & (doctor_name == df['doctor_name'])&(df['is_available'] == True)]["date_slot"]
+    availability = df[(df['date_slot'].apply(lambda x: x.split(' ')[0]) == desired_date) & (doctor_name == df['doctor_name'])&(df['is_available'] == True)]["date_slot"]
+    outpur = ""
     if len(availability) == 0:
-        return "Doctor not available for the day"
+        outpur = "Doctor not available for the day"
     else:
-        outpur = f"Availablity for the doctor{doctor_name}is+ ""+{availability}".join(availability)
-        return outpur
+        outpur = f"Availablity for the doctor {doctor_name}is+ ""+{availability}".join(availability)
+    return outpur
 
 from Libs.libs import llm
 
@@ -29,7 +30,7 @@ def mercedes_tool(text:str):
     A tool that is used to answer all the queries related to mercedes.
     """
     # df = pd.read_csv(f"./data/syntetic_data/availability.csv")
-    # rows = df[(df['date_slot'].apply(lambda input: input.split(' ')[0]) == desired_date.date) & (df['specialization'] == specialization) & (df['is_available'] == True)].reset_index()
+    # rows = df[(df['date_slot'].apply(lambda input: input.split(' ')[0]) == desired_date) & (df['specialization'] == specialization) & (df['is_available'] == True)].reset_index()
     # available_specialization = rows[['date_slot', 'specialization', 'doctor_name']]    
     # if len(available_specialization) == 0:
     #     return f"No doctors are available for {available_specialization}"    
@@ -42,12 +43,14 @@ def mercedes_tool(text:str):
 
 
 @tool
-def check_availability_by_specialization(desired_date:DateModel, specialization:Literal['General', "ENT","Dentist","orthodontist"]):
+def check_availability_by_specialization():
     """
     Check the availability of the doctor with specialization and date provided.
     """
+    specialization = "orthodontist"
+    desired_date = "2024-09-03"
     df = pd.read_csv(f"./data/syntetic_data/availability.csv")
-    rows = df[(df['date_slot'].apply(lambda input: input.split(' ')[0]) == desired_date.date) & (df['specialization'] == specialization) & (df['is_available'] == True)].reset_index()
+    rows = df[(df['date_slot'].apply(lambda input: input.split(' ')[0]) == desired_date) & (df['specialization'] == specialization) & (df['is_available'] == True)].reset_index()
     available_specialization = rows[['date_slot', 'specialization', 'doctor_name']]    
     if len(available_specialization) == 0:
         return f"No doctors are available for {available_specialization}"    
