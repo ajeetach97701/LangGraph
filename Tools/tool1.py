@@ -1,8 +1,7 @@
 from mdprint import mdprint
 
 from Libs.libs import *
-from Tools.Schema import QueryInput
-
+from Tools.Schema import *
 
 
 def Lamborghini(query: str):
@@ -20,7 +19,6 @@ def Lamborghini(query: str):
 
     chain = RunnableMap({
         "query": lambda x: x['query'],
-        "cars_context": lambda x: x['cars_context']
 
     }) | prompt_temp | llm | string_parser
     

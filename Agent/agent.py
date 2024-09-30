@@ -1,5 +1,8 @@
 from Libs.libs import *
 # from models.db import VectorStore
+from Tools.Schema import *
+from Tools.tool1 import vehicle_lambo_Tool
+from Tools.tool2 import vehicleTool
 
 #used to track the cost of API calls when working with OpenAI models.
 from langchain.callbacks import get_openai_callback
@@ -36,4 +39,8 @@ def create_custom_agent(prompt, tools:list):
 def agent_node(state, agent, name):
     result = agent.invoke(state)
     print(result)
-    return {"message":[HumanMessage(content=result['output'],next = name)]}
+    return {
+        "messages": state["messages"] + [HumanMessage(content=result['output'], name=name)],
+        "next": "supervisor"  # Assuming you want to go to supervisor next
+    }
+    # return {"message":[HumanMessage(content=result['output'],next = name)]}

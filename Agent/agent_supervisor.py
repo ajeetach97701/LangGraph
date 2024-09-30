@@ -1,4 +1,7 @@
 from Libs.libs import *
+from Tools.Schema import *
+from Tools.tool1 import vehicle_lambo_Tool
+from Tools.tool2 import vehicleTool
 
 
 from pydantic import BaseModel
@@ -38,4 +41,20 @@ def supervisor_agent(state):
         prompt
         | llm.with_structured_output(routeResponse)
     )
-    return supervisor_chain.invoke(state)
+    print("The state is ",state)
+
+    print("The message is ",state)
+    result =  supervisor_chain.invoke(state)
+    print("The result is", result.next)
+    if hasattr(result, 'next'):
+            return {
+                "messages": state["messages"],
+                "next": result.next
+            }
+    else:
+        print("Response does not have 'next'. Returning default state.")
+        return {
+            "messages": state["messages"],
+            "next": "FINISH"
+        }
+    return supervisor_chain.invoke(message)

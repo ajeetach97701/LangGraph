@@ -35,6 +35,7 @@ for member in members:
     
 conditional_map = {k:k for k in members} ##  {'Mercedes': 'Mercedes', 'Lamborghini': 'Lamborghini'}
 conditional_map['FINISH'] = END
+
 workflow.add_conditional_edges("supervisor", lambda x :x['next'], conditional_map)
 workflow.add_edge(START, "supervisor")
 
