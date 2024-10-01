@@ -2,10 +2,12 @@ from Tools.availability_by_doctor import *
 from Tools.availability_by_specialization import *
 
 @tool
-def book_appointment(patient_name:str, patient_id:str, desired_date:str,  doctor_name):
+def book_appointment(desired_date:str,  doctor_name:str):
     """
     used to book appointment with 
     """
+    patient_id = "abcded"
+    patient_name = "Ajeet Acharya"
     print("book tool activated")
     availability = pd.DataFrame()
     specializations = pd.DataFrame()
@@ -14,11 +16,13 @@ def book_appointment(patient_name:str, patient_id:str, desired_date:str,  doctor
     _, availability = availability_by_doctor(desired_date=desired_date, doctor_name=doctor_name)
     # print(availability)
     availability_new = availability[["date_slot","specialization","doctor_name"]]
-    
+    print("<<<<<<>>>>>>",availability_new)
     date_id_booking = availability.index[0]
     date_slot_booking = availability['date_slot'].iloc[0]
     time, date = date_slot_booking.split(" ")[0],  date_slot_booking.split(" ")[1]
-    if time == desired_date.split('T')[1]:
+    time = time.split(":")
+    final_time = f"{time[0]}:{time[1]}"
+    if final_time == desired_date.split('T')[1]:
         doctor_name_booking = availability['doctor_name'].iloc[0]
         specialization_booking = availability['specialization'].iloc[0]
         data = pd.DataFrame({
@@ -26,7 +30,7 @@ def book_appointment(patient_name:str, patient_id:str, desired_date:str,  doctor
             "doctor_time_id":[date_id_booking],
             "patient_name":[patient_name],
             "doctor_name":[doctor_name_booking],
-            "appointment date time":[time],
+            "appointment date time":[final_time],
             "appointment time":[date],
             "specialization":[specialization_booking]
         })

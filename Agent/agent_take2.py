@@ -139,8 +139,8 @@ def graph(query:str, senderId:str):
                 print("-----")
                 # history = {"human":query, "ai":final_response}
                 return {"result": final_response, "token_usage":token_usage}
-        except:
-            print("error")
+        except Exception:
+            print("error", Exception)
 
 
 
