@@ -1,7 +1,7 @@
 from Libs.libs import *
 from Tools.Schema import *
-from Tools.tool1 import vehicle_lambo_Tool
-from Tools.tool2 import vehicleTool
+# from Tools.availability_by_doctor import vehicle_lambo_Tool
+# from Tools.availability_by_specialization import vehicleTool
 
 
 from pydantic import BaseModel

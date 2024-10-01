@@ -1,16 +1,16 @@
 from Libs.libs import *
 # from models.db import VectorStore
 from Tools.Schema import *
-from Tools.tool1 import vehicle_lambo_Tool
-from Tools.tool2 import vehicleTool
+# from Tools.availability_by_doctor import vehicle_lambo_Tool
+# from Tools.availability_by_specialization import vehicleTool
 
 #used to track the cost of API calls when working with OpenAI models.
-from langchain.callbacks import get_openai_callback
-
+from langchain_community.callbacks.manager import get_openai_callback
+ 
 REDIS_SERVER = os.getenv('REDIS_SERVER') or 'localhost'
 
-def create_custom_agent(prompt, tools:list):
-    print("entered here in the agent")
+def create_custom_agent(prompt,tools:list, senderId:str):
+    print("entered here in the agent\n\n\n",prompt)
 # def generate_response(query):
     prompt_agent = ChatPromptTemplate.from_messages(
         [
@@ -26,7 +26,7 @@ def create_custom_agent(prompt, tools:list):
 
     agent = create_tool_calling_agent(llm, tools, prompt_agent)
 
-    agent_executor = AgentExecutor(tools=tools,
+    agent_executor = AgentExecutor(tools=[],
                                    return_intermediate_steps=True,
                                    handle_parsing_errors=True,
                                    max_iterations=5,
