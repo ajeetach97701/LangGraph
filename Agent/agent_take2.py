@@ -5,6 +5,8 @@ from Redis.utilis import RedisSaver
 from Tools.availability_by_doctor import *
 from Tools.availability_by_specialization import *
 from Tools.booking import book_appointment
+from Redis.utilis import RedisSaver
+from Tools.reschedule import reschedule_appointment
 
 
 class MessagesState(TypedDict):
@@ -13,39 +15,34 @@ class MessagesState(TypedDict):
     history: str
 
 
-from Tools.tools_init_ import *
+tools_available = [
+    book_appointment,
+    check_availability_by_doctor,
+    check_availability_by_specialization,
+    reschedule_appointment,
+]
+# tool = [mercedes_tool]
+tool_node = ToolNode(tools=tools_available)
+model = llm.bind_tools(tools=tools_available, strict=True)
 
-
-def graph(request_data):
-    print()
-    print()
-    print(request_data)
-    print()
-    print()
-    toolsInstance = GetCustomTools(request_data)
-    tools_available = toolsInstance.get_tools()
-    # tools_available = [book_appointment,check_availability_by_doctor, check_availability_by_specialization]
-    # tool = [mercedes_tool]
-    tool_node = ToolNode(tools=tools_available)
-    model = llm.bind_tools(tools=tools_available, strict=True)
 
     def read_human_feedback(state):
         return state
 
-    def call_model(state: MessagesState):
+def call_model(state: MessagesState):
 
-        print()
-        print()
-        print("From call_model the state is:", state["messages"][-1].content)
-        print()
-        print()
+    print("From call_model the state is:", state["senderId"])
+    s = getData(state["senderId"])
+    state["history"] = s
 
-        messages = [
-            SystemMessage(
-                content=f"You are helpful assistant.\n.As reference, today is {datetime.now().strftime('%Y-%m-%d %H:%M, %A')}\nKeep a friendly, professional tone.\nAvoid verbosity.\nConsiderations:\n- Don´t assume parameters in call functions that it didnt say.\n- MUST NOT force users how to write. Let them write in the way they want.\n- The conversation should be very natural like a secretary talking with a client.\n- Call only ONE tool at a time."
-            )
-        ] + state["messages"]
-        # messages = [SystemMessage(content="You are a helpful assistant. As reference, today is {datetime.now().strftime('%Y-%m-%d %H:%M, %A')}. Always use tools to answer the queries")]
+    # history = {"human_feedback":state["messages"][1], "AI":"This is ai response"}
+    messages = [
+        SystemMessage(
+            content=f"You are helpful assistant.\n.As reference, today is {datetime.now().strftime('%Y-%m-%d %H:%M, %A')}\nKeep a friendly, professional tone.\nAvoid verbosity.\nConsiderations:\n- Don´t assume parameters in call functions that it didnt say.\n- MUST NOT force users how to write. Let them write in the way they want.\n- The conversation should be very natural like a secretary talking with a client.\n- Call only ONE tool at a time."
+        )
+    ] + state["messages"]
+
+    # messages = [SystemMessage(content="You are a helpful assistant. As reference, today is {datetime.now().strftime('%Y-%m-%d %H:%M, %A')}. Always use tools to answer the queries")]
 
         response = model.invoke(messages)
         return {"messages": [response]}
@@ -101,16 +98,14 @@ def graph(request_data):
             inputs = {"messages": [HumanMessage(content=query)], "senderId": senderId}
             config = {"configurable": {"thread_id": senderId}}
 
-            for response in graph.stream(inputs, config):
-                try:
-                    if "__end__" not in response:
-                        # if 'human_feedback' in response:
-                        token_usage = response["human_feedback"]["messages"][
-                            -1
-                        ].response_metadata["token_usage"]
-                        final_response = response["human_feedback"]["messages"][
-                            -1
-                        ].content
+        for response in graph.stream(inputs, config):
+            try:
+                if "__end__" not in response:
+                    # if 'human_feedback' in response:
+                    token_usage = response["human_feedback"]["messages"][
+                        -1
+                    ].response_metadata["token_usage"]
+                    final_response = response["human_feedback"]["messages"][-1].content
 
                         print("-----")
                         # latest_checkpoint = checkpointer.get(config)
