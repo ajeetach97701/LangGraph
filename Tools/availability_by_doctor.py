@@ -6,7 +6,7 @@ from typing   import Literal
 import pandas as pd
 
 
-def availability_by_doctor(desired_date:str, doctor_name:str):
+def availabilityy(desired_date:str, doctor_name:str):
     desired_date_split = desired_date.split("T") or desired_date
     print("desired date is:",desired_date)
     df = pd.read_csv(f"./data/syntetic_data/availability.csv")
@@ -25,7 +25,7 @@ def availability_by_doctor(desired_date:str, doctor_name:str):
     availability = df[(df['date_slot'].apply(lambda x: x.split(' ')[0]) == date) & (doctor_name == df['doctor_name'])&(df['is_available'] == True)]
     return query, availability
 
-# @tool
+@tool
 def check_availability_by_doctor(desired_date:str, doctor_name:Literal['kevin anderson','robert martinez','susan davis','daniel miller','sarah wilson','michael green','lisa brown','jane smith','emily johnson','john doe']):
     # desired_date, doctor_name:Literal['kevin anderson','Ajeet','Rajesh','Shiva','Ganesh',]):
     """
@@ -33,7 +33,7 @@ def check_availability_by_doctor(desired_date:str, doctor_name:Literal['kevin an
     """
     # print(desired_date)
     print("from check availability by doctor tool")
-    query, availability = availability_by_doctor(desired_date=desired_date, doctor_name=doctor_name)
+    query, availability = availabilityy(desired_date=desired_date, doctor_name=doctor_name)
     print("Tool entered with the query", query)
     # print(availability)
     template = """

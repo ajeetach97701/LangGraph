@@ -14,10 +14,10 @@ class MessagesState(TypedDict):
     history:str
     
     
-tools = [check_availability_by_doctor, check_availability_by_specialization, book_appointment]
+tools_available = [book_appointment,check_availability_by_doctor, check_availability_by_specialization]
 # tool = [mercedes_tool]
-tool_node = ToolNode(tools=tools)
-model = llm.bind_tools(tools = tools, strict=True)
+tool_node = ToolNode(tools=tools_available)
+model = llm.bind_tools(tools = tools_available, strict=True)
 
 def read_human_feedback(state):
     # if state['messages'][-1].tool_calls == []:
@@ -26,28 +26,28 @@ def read_human_feedback(state):
     
     
     # history = {"history":[]}
-    history = getData("abcsdd")
-    if history is None:
-        history = {'history':[]}
-    history_new = {"human":f"{state['messages'][0].content}", "ai":f"{state['messages'][-1].content}"}
+    # history = getData("abcsdd")
+    # if history is None:
+    #     history = {'history':[]}
+    # history_new = {"human_feedback":f"{state['messages'][0].content}", "ai":f"{state['messages'][-1].content}"}
 
 
 
     # history = history_new.append(history['history'])
-    history['history'].append(history_new)
-    print(history)
+    # history['history'].append(history_new)
+    # print(history)
 
         
         
     
     # history['history'].append(history_new)
     
-    setData(state['senderId'], history)
+    # setData(state['senderId'], history)
     
-    if len(history['history'])>4:
-        length = len(history['history']) - 4
-        for i in range(length):
-            history["history"].pop(0)
+    # if len(history['history'])>4:
+    #     length = len(history['history']) - 4
+    #     for i in range(length):
+    #         history["history"].pop(0)
     
     # a = getData("abcsdd")
     # combined_history.append(a)
@@ -55,10 +55,10 @@ def read_human_feedback(state):
         
     
     
-    print()
-    print(state)
-    print("history",history)
-    print()
+    # print()
+    # print(state)
+    # print("history",history)
+    # print()
     return state
     #     pass
 
@@ -71,28 +71,28 @@ def call_model(state: MessagesState):
     state["history"] = s
     # As reference, today is {datetime.now().strftime('%Y-%m-%d %H:%M, %A')}
 
-    # history = {"human":state["messages"][1], "AI":"This is ai response"}
-    messages = [SystemMessage(content=f"You are helpful assistant.\n.\nKeep a friendly, professional tone.\nAvoid verbosity.\nConsiderations:\n- Don´t assume parameters in call functions that it didnt say.\n- MUST NOT force users how to write. Let them write in the way they want.\n- The conversation should be very natural like a secretary talking with a client.\n- Call only ONE tool at a time. You are also provided a conversation history between you and human. You also have history to answer the user queries{state['history']}. ")] + state['messages']
+    # history = {"human_feedback":state["messages"][1], "AI":"This is ai response"}
+    messages = [SystemMessage(content=f"You are helpful assistant.\n.\nKeep a friendly, professional tone.\nAvoid verbosity.\nConsiderations:\n- Don´t assume parameters in call functions that it didnt say.\n- MUST NOT force users how to write. Let them write in the way they want.\n- The conversation should be very natural like a secretary talking with a client.\n- Call only ONE tool at a time.")] + state['messages']
     # messages = [SystemMessage(content="You are a helpful assistant. As reference, today is {datetime.now().strftime('%Y-%m-%d %H:%M, %A')}. Always use tools to answer the queries")]
-    print(messages)
+
     response = model.invoke(messages)
     return {"messages": [response]}
 
-def should_continue(state: MessagesState) -> Literal["tools", "human"]:
+def should_continue(state: MessagesState) -> Literal["tools", "human_feedback"]:
     messages = state['messages']
     last_message = messages[-1]
     if last_message.tool_calls:
         return "tools"
-    return "human"
+    return "human_feedback"
 
 
 
 
-def should_continue_with_feedback(state: MessagesState) -> Literal["agent", "end", "human"]:
+def should_continue_with_feedback(state: MessagesState) -> Literal["agent", "end", "human_feedback"]:
     messages = state['messages']
     last_message = messages[-1]
     if isinstance(last_message, dict):
-        if last_message.get("type","") == 'human':
+        if last_message.get("type","") == 'human_feedback':
             return "agent"
     if (isinstance(last_message, HumanMessage)):
         return "agent"
@@ -106,17 +106,17 @@ def graph(query:str, senderId:str):
     workflow = StateGraph(MessagesState)
     workflow.add_node("agent",call_model)
     workflow.add_node("tools",tool_node)
-    workflow.add_node("human", read_human_feedback)
+    workflow.add_node("human_feedback", read_human_feedback)
 
 
     workflow.add_conditional_edges(
         "agent",
         should_continue,
-        {"human":"human",
+        {"human_feedback":"human_feedback",
         "tools":"tools"}
     )
     workflow.add_conditional_edges(
-        "human",
+        "human_feedback",
         should_continue_with_feedback,
         {"agent":"agent","end":END}
     )
@@ -134,13 +134,16 @@ def graph(query:str, senderId:str):
     for response in graph.stream(inputs):
         try:
             if "__end__" not in response:
-                token_usage =response['human']['messages'][-1].response_metadata['token_usage']
-                final_response =  response['human']['messages'][-1].content
+                print(response)
+                # if 'human_feedback' in response:
+                token_usage =response['human_feedback']['messages'][-1].response_metadata['token_usage']
+                final_response =  response['human_feedback']['messages'][-1].content
+                    
                 print("-----")
-                # history = {"human":query, "ai":final_response}
+                # history = {"human_feedback":query, "ai":final_response}
                 return {"result": final_response, "token_usage":token_usage}
-        except Exception:
-            print("error", Exception)
+        except Exception as e:
+            print("error", e)
 
 
 
