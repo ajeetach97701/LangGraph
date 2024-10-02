@@ -3,7 +3,7 @@ from models.vars import DELETE_HISTORY_QUERYS, is_query_exclude
 
 app = FastAPI()
 from Agent.agent_take2 import graph
-
+from Agent.generate_response import GenerateResponse
 @app.get('/test')
 def test_app():
     return {"message": "this application is up and running"}
@@ -27,8 +27,9 @@ def get_response(query: str, senderId: str):
 
     inputs = {"messages":[HumanMessage(content=query)], "senderId":senderId}
     
-    
-    response = graph(query=query, senderId= senderId)
+    data = {"query":query, "senderId":senderId}
+    generate_response_instance = GenerateResponse(**data)
+    response = generate_response_instance.generate()    
     print("from server",response)
     return response
 
