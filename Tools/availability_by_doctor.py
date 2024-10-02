@@ -40,63 +40,66 @@ def availabilityy(desired_date: str, doctor_name: str):
     return query, availability
 
 
-@tool
-def check_availability_by_doctor(
-    desired_date: str,
-    doctor_name: Literal[
-        "kevin anderson",
-        "robert martinez",
-        "susan davis",
-        "daniel miller",
-        "sarah wilson",
-        "michael green",
-        "lisa brown",
-        "jane smith",
-        "emily johnson",
-        "john doe",
-    ],
-):
-    # desired_date, doctor_name:Literal['kevin anderson','Ajeet','Rajesh','Shiva','Ganesh',]):
-    """
-    Check the availability of the doctor with the name of the doctor and date of availability provided
-    """
-    # print(desired_date)
-    print("from check availability by doctor tool")
-    query, availability = availabilityy(
-        desired_date=desired_date, doctor_name=doctor_name
-    )
-    print("Tool entered with the query", query)
-    # print(availability)
-    template = """
-    You have to answer the user query which is about the availability of a doctor inquired by patient. You are also given a context that contains the doctors available in that day and a time slot. Analyze and return the doctor name, date and available time slot. 
-        Context inside double backticks:`{context}`
-        Question inside triple backticks:{question}
-        Response in markdown format without any backticks and in the context phrase just answer what is asked and if the doctor is not available for a particular time slot, recomend the other time slots.
-
-        Your response should be very much conversational in such a way that you are a receptionist talking to a patient who is here to schedule an appointment.
+# @tool
+def check_availability_by_doctor(self):
+    def check_doctor(
+        desired_date: str,
+        doctor_name: Literal[
+            "kevin anderson",
+            "robert martinez",
+            "susan davis",
+            "daniel miller",
+            "sarah wilson",
+            "michael green",
+            "lisa brown",
+            "jane smith",
+            "emily johnson",
+            "john doe",
+        ],
+    ):
+        # desired_date, doctor_name:Literal['kevin anderson','Ajeet','Rajesh','Shiva','Ganesh',]):
         """
-    prompt = ChatPromptTemplate.from_template(template)
-    # print("context>>>>>>>>>>>>>>>>",database.similarity_search(query,k=5))
-    chain = (
-        RunnableMap(
-            {"context": lambda x: availability, "question": lambda x: x["question"]}
+        Check the availability of the doctor with the name of the doctor and date of availability provided
+        """
+        print(self.senderId)
+        # print(desired_date)
+        print("from check availability by doctor tool")
+        query, availability = availabilityy(
+            desired_date=desired_date, doctor_name=doctor_name
         )
-        | prompt
-        | llm
-        | string_parser
-    )
-    result = chain.invoke({"question": query})
-    print("------------")
-    mdprint(result)
-    print("------------")
-    return {"messages": result}
+        print("Tool entered with the query", query)
+        # print(availability)
+        template = """
+        You have to answer the user query which is about the availability of a doctor inquired by patient. You are also given a context that contains the doctors available in that day and a time slot. Analyze and return the doctor name, date and available time slot. 
+            Context inside double backticks:`{context}`
+            Question inside triple backticks:{question}
+            Response in markdown format without any backticks and in the context phrase just answer what is asked and if the doctor is not available for a particular time slot, recomend the other time slots.
 
-    # outpur = ""
-    # if len(availability) == 0:
-    #     outpur = "Doctor not available for the day"
-    #     return llm.invoke(input=f"Your should return this text in a markdown format in a good language No doctors are available for {availability}"  )
-    # else:
-    #     outpur = f"Availablity for the doctor {doctor_name}is+ ""+{availability}".join(availability)
-    #     return llm.invoke(input=f"Your should return this text in a markdown format in a good language No doctors are available for {outpur}"  )
+            Your response should be very much conversational in such a way that you are a receptionist talking to a patient who is here to schedule an appointment.
+            """
+        prompt = ChatPromptTemplate.from_template(template)
+        # print("context>>>>>>>>>>>>>>>>",database.similarity_search(query,k=5))
+        chain = (
+            RunnableMap(
+                {"context": lambda x: availability, "question": lambda x: x["question"]}
+            )
+            | prompt
+            | llm
+            | string_parser
+        )
+        result = chain.invoke({"question": query})
+        print("------------")
+        mdprint(result)
+        print("------------")
+        return {"messages": result}
+    return check_doctor
 
-    # return outpur
+        # outpur = ""
+        # if len(availability) == 0:
+        #     outpur = "Doctor not available for the day"
+        #     return llm.invoke(input=f"Your should return this text in a markdown format in a good language No doctors are available for {availability}"  )
+        # else:
+        #     outpur = f"Availablity for the doctor {doctor_name}is+ ""+{availability}".join(availability)
+        #     return llm.invoke(input=f"Your should return this text in a markdown format in a good language No doctors are available for {outpur}"  )
+
+        # return outpur
