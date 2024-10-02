@@ -64,14 +64,12 @@ def call_model(state: MessagesState):
     print("From call_model the state is:", state["senderId"])
     s = getData(state["senderId"])
     state["history"] = s
-    # As reference, today is {datetime.now().strftime('%Y-%m-%d %H:%M, %A')}
+    
 
     # history = {"human_feedback":state["messages"][1], "AI":"This is ai response"}
-    messages = [
-        SystemMessage(
-            content=f"You are helpful assistant.\n.\nKeep a friendly, professional tone.\nAvoid verbosity.\nConsiderations:\n- Don´t assume parameters in call functions that it didnt say.\n- MUST NOT force users how to write. Let them write in the way they want.\n- The conversation should be very natural like a secretary talking with a client.\n- Call only ONE tool at a time."
-        )
-    ] + state["messages"]
+    messages = [SystemMessage(content=f"You are helpful assistant.\n.As reference, today is {datetime.now().strftime('%Y-%m-%d %H:%M, %A')}\nKeep a friendly, professional tone.\nAvoid verbosity.\nConsiderations:\n- Don´t assume parameters in call functions that it didnt say.\n- MUST NOT force users how to write. Let them write in the way they want.\n- The conversation should be very natural like a secretary talking with a client.\n- Call only ONE tool at a time.")] + state['messages']
+
+   
     # messages = [SystemMessage(content="You are a helpful assistant. As reference, today is {datetime.now().strftime('%Y-%m-%d %H:%M, %A')}. Always use tools to answer the queries")]
 
     response = model.invoke(messages)
