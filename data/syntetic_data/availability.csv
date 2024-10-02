@@ -4277,5 +4277,7 @@ date_slot,specialization,doctor_name,is_available,patient_to_attend
 2024-09-03 14:30,orthodontist,kevin anderson,True,
 2024-09-03 15:00,orthodontist,kevin anderson,True,
 2024-09-03 15:30,orthodontist,kevin anderson,True,
-2024-09-03 16:00,orthodontist,kevin anderson,True,
+2024-09-03 16:00,orthodontist,kevin anderson,False,Ajeet123
 2024-09-03 16:30,orthodontist,kevin anderson,True,
+2024-10-03 16:30,orthodontist,kevin anderson,True,
+2024-10-05 16:30,orthodontist,kevin anderson,False,ajeet123check123
