@@ -1,9 +1,9 @@
 
 from Libs.libs import *
+
 collection_name: str = os.getenv("RAG_GYM")
 
-from Tools.Schema import RagInput
-
+from models.Schema import RagInput
 vector_store=Milvus(embedding_function=embeddings,connection_args={ "host":host, "port":port},collection_name=collection_name)
 
 

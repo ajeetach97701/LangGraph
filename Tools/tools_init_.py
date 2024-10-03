@@ -1,4 +1,4 @@
-from Tools.Schema import *
+from models.Schema import *
 from Libs.libs import *
 from Tools.booking import *
 from Tools.reschedule import *

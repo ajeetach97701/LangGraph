@@ -1,7 +1,7 @@
 from Libs.libs import *
 from graph import graph
 
-from Tools.Schema import QueryInput
+from models.Schema import QueryInput
 
 
 class GenerateResponse:
