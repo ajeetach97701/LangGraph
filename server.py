@@ -2,7 +2,7 @@ from Libs.libs import *
 from models.vars import DELETE_HISTORY_QUERYS, is_query_exclude
 
 app = FastAPI()
-from Agent.agent_take2 import graph
+# from graph import graphfrom graph import graph
 from Agent.generate_response import GenerateResponse
 @app.get('/test')
 def test_app():
@@ -14,13 +14,39 @@ REDIS_SERVER = os.getenv('REDIS_SERVER') or 'localhost'
 
 
 @app.get('/response')
-def get_response(query: str, senderId: str):
+def get_response(query: str, senderId: str, meta_data: Optional[str], latitude: Optional[str] = None, longitude: Optional[str] = None):
     # To clear redis History
+    
     if query in DELETE_HISTORY_QUERYS or query == 'menu': 
         history_reddis = RedisChatMessageHistory(
             senderId, url=f"redis://{REDIS_SERVER}")
         history_reddis.clear()
         deleteData(senderId)
+    
+    if query in DELETE_HISTORY_QUERYS or query == 'menu': 
+        deleteData(senderId)
+        
+    # calling the agent
+    is_exist_response = is_query_exclude(query)
+    if is_exist_response:
+        print()
+        print()
+        print("The query is:",query)
+        print(is_exist_response)
+        # print(is_exist_response['title'])
+        data:str= ""
+        if 'data' in is_exist_response:
+            data = is_exist_response['title'] + data
+            for item in is_exist_response['data']:
+                # print(item['title'])
+                data = data+ " " + item['title'] +","
+        else:
+            data = is_exist_response['title']
+        
+        print("Data to store in redis is:",data)
+        print()
+        print()
+        return {"custom": is_exist_response}
     
     print(query)
         

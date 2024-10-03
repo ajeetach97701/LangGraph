@@ -7,6 +7,7 @@ import uvicorn
 import operator
 import requests
 import functools
+from pydantic import BaseModel, Field
 
 import nest_asyncio
 from mdprint import mdprint
@@ -14,6 +15,7 @@ import email.message, smtplib
 from datetime import datetime
 from dotenv import load_dotenv, find_dotenv
 from typing import Optional
+from langgraph.prebuilt import create_react_agent
 
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, StateGraph, MessagesState, START
@@ -22,7 +24,10 @@ from langchain_core.messages import BaseMessage
 from langgraph.prebuilt import ToolNode
 from typing import TypedDict, Annotated, List, Literal,Sequence 
 from langchain_core.messages import HumanMessage, SystemMessage, AnyMessage
-
+import datetime
+from langchain_core.tools import tool
+from typing import Literal
+import pandas as pd
 
 
 
@@ -60,10 +65,9 @@ from langchain.agents import create_tool_calling_agent, AgentExecutor
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_community.chat_message_histories import RedisChatMessageHistory
 
-    
 from models.model import get_llm, get_embeddings
-from models.model import get_embeddings, get_llm
 from models.redis import getData,setData,deleteData,flushAll
+llm = get_llm('gpt-4o-mini')
 
 
 host = os.getenv("HOST")

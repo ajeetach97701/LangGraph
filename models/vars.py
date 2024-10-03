@@ -15,10 +15,11 @@ DELETE_HISTORY_QUERYS=['menu','lead','restart','session-restart','reload','/menu
                     #     "/offers",
                     #     "/roadside_assistance"
 from Libs.libs import *
+from models.localdata import *
 
-def is_query_exclude(query:str, organization_name:str):
+def is_query_exclude(query:str):
     
-    response = localdata(organization_name= organization_name, key = query)
+    response = localdata(key = query)
     if response:
         return response
     else:
