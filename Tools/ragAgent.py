@@ -8,7 +8,7 @@ vector_store=Milvus(embedding_function=embeddings,connection_args={ "host":host,
 
 
 
-def create_custom_agent(query:str, prompt:str, tools:list):
+def create_custom_agent(prompt:str, tools:list):
 
     prompt_agent = ChatPromptTemplate.from_messages(
         [
@@ -16,7 +16,7 @@ def create_custom_agent(query:str, prompt:str, tools:list):
                 "system",prompt
             ),
             ("placeholder", "{chat_history}"),
-            ("human", "{input}"),
+            ("human", "{messages}"),
             ("placeholder", "{agent_scratchpad}"),
         ],
     )
@@ -36,9 +36,7 @@ def create_custom_agent(query:str, prompt:str, tools:list):
                                     verbose=True
                                     )
 
- 
-    output = agent_executor.invoke({"input": query})
-    return output
+    return agent_executor
 
 
 def rag_gym(query: str):

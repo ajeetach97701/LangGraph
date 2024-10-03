@@ -8,8 +8,8 @@ def book_appointment(self):
         When the user wants to book an appointment for a doctor at a specified time.
 
         """
-        print(self.senderId)
-        patient_id = self.senderId
+        # print(self.senderId)
+        patient_id = "self.senderId"
         patient_name = "Ajeet Acharya"
         print("book tool activated", desired_date, " ", desired_time)
         availability = pd.DataFrame()
@@ -53,6 +53,6 @@ def write_to_excel(data, date_id_booking, patient_id):
     df.loc[column_no, 'is_available'] = False 
     df.loc[column_no,'patient_to_attend'] = "Ajeet123"
     df.to_csv(book_appointment_path, index=False)
-    return "Booking has been made sucessfully"
+    return {"messages":"Booking has been made sucessfully"}
 
 
