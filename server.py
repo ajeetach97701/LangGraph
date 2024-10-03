@@ -63,4 +63,4 @@ def get_response(query: str, senderId: str, meta_data: Optional[str], latitude: 
 
 
 if __name__ == "__main__":
-    uvicorn.run(app=app, host="192.168.1.77", port=8000)
+    uvicorn.run(app=app, host="192.168.1.96", port=8000)
