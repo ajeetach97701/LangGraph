@@ -4,6 +4,10 @@ class QueryInput(BaseModel):
     query: str = Field(description="Query to be passed as an argument. Always use this")
     senderId:str = Field(description="Query to be passed as an argument. Always use this")
     
+class RagInput(BaseModel):
+    query: str = Field(description="Query to be passed as an argument. Always use this")
+   
+    
     
 class BookingInput(BaseModel):
     patient_id: str = Field(description="The patient id to be passed as an argument. Always use this")

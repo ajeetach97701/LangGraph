@@ -4,10 +4,11 @@
 from Libs.libs import *
 
 from Redis.utilis import RedisSaver
-
+from langchain.agents import create_react_agent
 from Tools.availability_by_doctor import *
 from Tools.availability_by_specialization import *
 from Tools.booking import book_appointment
+from Tools.ragAgent import rag_tool
 
 class MessagesState(TypedDict):
     messages: Annotated[List[AnyMessage], operator.add]
@@ -28,6 +29,7 @@ def graph(request_data):
     # tool = [mercedes_tool]
     tool_node = ToolNode(tools=tools_available)
     model = llm.bind_tools(tools = tools_available, strict=True)
+    ragAgent = create_react_agent(llm, tools=[rag_tool])
 
     def read_human_feedback(state):
         return state
@@ -77,7 +79,7 @@ def graph(request_data):
         workflow.add_node("agent",call_model)
         workflow.add_node("tools",tool_node)
         workflow.add_node("human_feedback", read_human_feedback)
-
+        workflow.add_node('rag', ragAgent)
 
         workflow.add_conditional_edges(
             "agent",

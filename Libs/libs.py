@@ -49,7 +49,8 @@ from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain_core.output_parsers import StrOutputParser
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.vectorstores.chroma import Chroma
-from langchain_community.vectorstores.milvus import Milvus
+
+from langchain_milvus import Milvus
 from langchain_core.messages import HumanMessage, AIMessage
 
 from langchain_core.output_parsers.json import JsonOutputParser
@@ -65,7 +66,8 @@ from models.model import get_embeddings, get_llm
 from models.redis import getData,setData,deleteData,flushAll
 
 
-
+host = os.getenv("HOST")
+port = os.getenv("PORT")
 
 REDIS_SERVER=os.getenv('REDIS_SERVER')  or 'localhost'
 llm = get_llm('gpt-4o-mini')
