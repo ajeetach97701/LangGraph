@@ -1,9 +1,4 @@
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_openai import ChatOpenAI
-from pydantic import BaseModel
-from typing import Literal
 from Libs.libs import *
-from Libs.libs import llm 
 
 members = ["Appointments", "Rag"]
 system_prompt = (

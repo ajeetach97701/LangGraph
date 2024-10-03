@@ -1,36 +1,10 @@
-import functools
-import operator
-from typing import Sequence, Annotated
-from typing_extensions import TypedDict
-from Redis.utilis import RedisSaver
-# from Agent.supervisor_agent import agent_node, supervisor_agent
-
-from langchain_core.messages import BaseMessage
-
-
-
-                # from Agent.agent_take2 import *
-from Libs.libs import *
-# from graph import  graph
-from IPython.display import Image, display
-from langgraph.graph import END, StateGraph, START
-from langgraph.prebuilt import create_react_agent
 from Libs.libs import *
 from Tools.tools_init_ import GetCustomTools
-from Tools.availability_by_doctor import check_availability_by_doctor
-from Tools.availability_by_specialization import check_availability_by_specialization
-from Tools.booking import book_appointment
-from Tools.reschedule import reschedule
 from Tools.ragAgent import rag_tool
 from Agent.supervisor_agent import supervisor_agent_make, agent_node
-
+from models.Schema import *
 # The agent state is the input to each node in the graph
-class AgentState(TypedDict):
-    # The annotation tells the graph that new messages will always
-    # be added to the current states
-    messages: Annotated[Sequence[BaseMessage], operator.add]
-    # The 'next' field indicates where to route to next
-    next: str
+
 
 def graph(request_data):
     def graph_main():
