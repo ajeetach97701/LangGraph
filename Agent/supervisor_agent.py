@@ -41,10 +41,14 @@ def agent_node(state, agent, name):
     result = agent.invoke(state)
     print("From agent node", result)
     return {
-        "messages": [HumanMessage(content=result["messages"][-1].content, name=name)]
+        "messages": [HumanMessage(content=result["messages"][-1].content, name=name)],
         # "messages": [HumanMessage(content=result["messages"][-1].content, name=name)]
     }
 
-def supervisor_agent(state):
+def supervisor_agent_make(state):
     supervisor_chain = prompt | llm.with_structured_output(routeResponse)
-    return supervisor_chain.invoke(state)
+    
+    rsult = supervisor_chain.invoke(state)
+    print(rsult, " ", type(rsult), " ", rsult.next)
+    
+    return  rsult
