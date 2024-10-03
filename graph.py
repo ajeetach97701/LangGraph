@@ -7,6 +7,12 @@ from Redis.utilis import RedisSaver
 
 from langchain_core.messages import BaseMessage
 
+
+
+                # from Agent.agent_take2 import *
+from Libs.libs import *
+# from graph import  graph
+from IPython.display import Image, display
 from langgraph.graph import END, StateGraph, START
 from langgraph.prebuilt import create_react_agent
 from Libs.libs import *
@@ -28,120 +34,90 @@ class AgentState(TypedDict):
 
 def graph(request_data):
     def graph_main():
-
         def read_human_feedback(state):
             return state
         
-        def should_continue(state: MessagesState) -> Literal["tools", "human_feedback"]:
-            messages = state['messages']
-            last_message = messages[-1]
-            if last_message.tool_calls:
-                return "tools"
-            return "human_feedback"
-        
-        def should_continue_with_feedback(state: MessagesState) -> Literal["supervisor_agent", "end", "human_feedback"]:
-            messages = state['messages']
-            last_message = messages[-1]
-            if isinstance(last_message, dict):
-                if last_message.get("type","") == 'human_feedback':
-                    return "agent"
-            if (isinstance(last_message, HumanMessage)):
-                return "agent"
-            if (isinstance(last_message, AIMessage)):
-                return "end"
-            return "end"
+        def should_continue(state: MessagesState) -> Literal["Rag","Appointments"]:
+            print("Inside should continue", state['next'])
+            if state['next'] == "FINISH":
+                return "human_feedback"
+            return state['next']
        
         
         toolsInstance = GetCustomTools()
         tools_available = toolsInstance.get_tools()
 
         
-    Appointments_agnet = create_react_agent(llm, tools=tools_available, )
-    Appointments_node = functools.partial(agent_node, agent=Appointments_agnet, name="Appointments")
+        toolsInstance = GetCustomTools()
+        tools_available = toolsInstance.get_tools()
 
-    Rag_agent = create_react_agent(llm, tools=[rag_tool])
-    Rag_node = functools.partial(agent_node, agent=Rag_agent, name="Rag")
-    workflow = StateGraph(AgentState)
-    workflow.add_node("Appointments", Appointments_node)
-    workflow.add_node("Rag", Rag_node)
-    workflow.add_node("supervisor_agent", supervisor_agent_make)
-    workflow.add_node("human_feedback", read_human_feedback)
+        class routeResponse(BaseModel):
+            next: Literal["Appointments", "Rag", "FINISH"]
 
-    # workflow.add_edge("Appointments", "supervisor_agent")
-    conditional_map = {'Appointments': 'Appointments', 'Rag': 'Rag', 'FINISH': '__end__'}
-    # workflow.add_conditional_edges("supervisor_agent", lambda x: x["next"], conditional_map)
+        from Tools.ragAgent import create_custom_agent
+        Appointments_agnet = create_custom_agent(prompt="""You are an intelligent agent that answers queries related to the appointment with doctor based on doctor name, specialization, schedule appointment and reschedule appoinments.""", tools=tools_available, )
+        Appointments_node = functools.partial(agent_node, agent=Appointments_agnet, name="Appointments")
 
-    workflow.add_conditional_edges(
-    "supervisor_agent",
-    should_continue,
-            {
-                "human_feedback":"human_feedback",
-                "Rag":"Rag",
-                "Appointments":"Appointments"}
+        Rag_agent = create_custom_agent(prompt="""You are an intelligent agent that answers queries related to TATA Punch EV vehicles and its variants.""", tools=[rag_tool] )
+
+        Rag_node = functools.partial(agent_node, agent=Rag_agent, name="Rag")
+        workflow = StateGraph(AgentState)
+        workflow.add_node("Appointments", Appointments_node)
+        workflow.add_node("Rag", Rag_node)
+        workflow.add_node("supervisor_agent", supervisor_agent_make)
+        workflow.add_node("human_feedback", read_human_feedback)
+
+        # workflow.add_edge("Appointments", "supervisor_agent")
+        conditional_map = {'Appointments': 'Appointments', 'Rag': 'Rag', 'FINISH': '__end__'}
+        # workflow.add_conditional_edges("supervisor_agent", lambda x: x["next"], conditional_map)
+
+        workflow.add_conditional_edges(
+        "supervisor_agent",
+        should_continue,
+                {
+                    "Rag":"Rag",
+                    "Appointments":"Appointments",
+                    "human_feedback":"human_feedback"
+                    }
+            )
+        workflow.add_edge(
+            "human_feedback",END
         )
-    workflow.add_conditional_edges(
-        "human_feedback",
-        should_continue_with_feedback,
-        {"supervisor_agent":"supervisor_agent","end":END}
-    )
 
-    workflow.add_conditional_edges(
-        "Appointments",
-        should_continue_with_feedback,
-        {"supervisor_agent":"supervisor_agent","end":END}
-    )
-
-    workflow.add_conditional_edges(
-        "Rag",
-        should_continue_with_feedback,
-        {
-            "supervisor_agent":"supervisor_agent",
-            "end":END
-            }
-    )
-            
-            
-            
-    workflow.add_edge(START, "supervisor_agent")
-    graph = workflow.compile()
+        workflow.add_edge(
+            "Appointments","supervisor_agent",
+        )
 
 
 
-   
-   
-    for s in graph.stream({"messages": [HumanMessage(content=request_data.query)]},{"recursion_limit": 100}):
-        if "__end__" not in s:
-            print(s)
-            print("----")
-        else:
-            print(s)
-
-    # with RedisSaver.from_conn_info(host="localhost", port=6379, db=0) as checkpointer:
-    #     graph = workflow.compile(checkpointer=checkpointer)
-    #     inputs = {"messages": [HumanMessage(content=query)], "senderId": "senderId"}
-    #     config = {"configurable": {"thread_id": "senderId"}}
-
-    #     for s in graph.stream({"messages": [HumanMessage(content=query)]},{"recursion_limit": 100}):
-    #        if "__end__" not in s:
-    #            print(s)
-    #            print("----")
-                    
-                    
-                    
-                    
-    #                 # print({"result": final_response, "token_usage": token_usage})
+        workflow.add_edge(
+            "Rag","supervisor_agent",)
                 
-            
-        return graph_main()
-
-
-            
-
-
+                
+                
+        workflow.add_edge(START, "supervisor_agent")
+        graph = workflow.compile(debug=True)
 
 
 
 
+        display(Image(graph.get_graph(xray=True).draw_mermaid_png()))
 
-
-            
+        for s in graph.stream({"messages": [HumanMessage(content=request_data.query)]},{"recursion_limit": 100}):
+            if "__end__" not in s:
+                if 'human_feedback' in s:
+                    mdprint(s['human_feedback']['messages'][-1].content)
+                    response = s['human_feedback']['messages'][-1].content
+                    return response
+                    print()
+                    print()
+                    break
+                print(s)
+                print()
+                print()
+                print()
+                print("This is s.,.,.,.",s)
+                print("----")
+            else:
+                print(s)
+    return graph_main()
