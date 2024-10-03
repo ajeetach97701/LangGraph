@@ -31,18 +31,10 @@ class bookingSchema(BaseModel):
     doctor_name:str = Field(description= "The name of the doctor to be passed as an arguement. Always use this")
     
     
-   
-    
-    
 
-# class DateModel(BaseModel):
-#     """
-#     The way the date should be structured and formatted
-#     """
-#     date: str = Field(..., description="Propertly formatted date", pattern=r'^\d{4}-\d{2}-\d{2}$')
-
-#     @field_validator("date")
-#     def check_format_date(cls, v):
-#         if not re.match(r'^\d{4}-\d{2}-\d{2}$', v):
-#             raise ValueError("The date must be in the format 'YYYY-MM-DD'")
-#         return v
+class AgentState(TypedDict):
+    # The annotation tells the graph that new messages will always
+    # be added to the current states
+    messages: Annotated[Sequence[BaseMessage], operator.add]
+    # The 'next' field indicates where to route to next
+    next: str
