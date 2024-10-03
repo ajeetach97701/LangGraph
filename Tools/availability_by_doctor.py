@@ -1,9 +1,4 @@
-
 from Libs.libs import *
-
-
-
-
 
 
 def availabilityy(desired_date: str, doctor_name: str):
@@ -61,6 +56,7 @@ def check_availability_by_doctor(self):
         """
         Check the availability of the doctor with the name of the doctor and date of availability provided
         """
+        print(",,,,,,", self)
         print(self.senderId)
         # print(desired_date)
         print("from check availability by doctor tool")
@@ -92,14 +88,15 @@ def check_availability_by_doctor(self):
         mdprint(result)
         print("------------")
         return {"messages": result}
+
     return check_doctor
 
-        # outpur = ""
-        # if len(availability) == 0:
-        #     outpur = "Doctor not available for the day"
-        #     return llm.invoke(input=f"Your should return this text in a markdown format in a good language No doctors are available for {availability}"  )
-        # else:
-        #     outpur = f"Availablity for the doctor {doctor_name}is+ ""+{availability}".join(availability)
-        #     return llm.invoke(input=f"Your should return this text in a markdown format in a good language No doctors are available for {outpur}"  )
+    # outpur = ""
+    # if len(availability) == 0:
+    #     outpur = "Doctor not available for the day"
+    #     return llm.invoke(input=f"Your should return this text in a markdown format in a good language No doctors are available for {availability}"  )
+    # else:
+    #     outpur = f"Availablity for the doctor {doctor_name}is+ ""+{availability}".join(availability)
+    #     return llm.invoke(input=f"Your should return this text in a markdown format in a good language No doctors are available for {outpur}"  )
 
-        # return outpur
+    # return outpur
