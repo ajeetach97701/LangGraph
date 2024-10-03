@@ -39,9 +39,9 @@ prompt = ChatPromptTemplate.from_messages(
 
 def agent_node(state, agent, name):
     result = agent.invoke(state)
-    print("From agent node", result)
+
     return {
-        "messages": [HumanMessage(content=result["messages"][-1].content, name=name)],
+        "messages": [HumanMessage(content=result["output"], name=name)],
         # "messages": [HumanMessage(content=result["messages"][-1].content, name=name)]
     }
 
@@ -49,6 +49,5 @@ def supervisor_agent_make(state):
     supervisor_chain = prompt | llm.with_structured_output(routeResponse)
     
     rsult = supervisor_chain.invoke(state)
-    print(rsult, " ", type(rsult), " ", rsult.next)
     
-    return  rsult
+    return supervisor_chain.invoke(state)
