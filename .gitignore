@@ -1,0 +1,11 @@
+langGraphNew
+__pycache__
+.qodo
+database
+venv/
+LGNewFEB
+.env
+langchain-academy
+__pycache__
+test.ipynb
+.DS_Store
